@@ -28,9 +28,27 @@ function git
         & "C:\Program Files\OllieAve.GitImproved\net9.0\OllieAve.GitImproved.exe" -- @($args | Select-Object -Skip 1)
         return
     }
+    elseif ($args.Length -gt 0 -and $args[0] -eq 'checkoutr')
+    {
+        $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
+
+        $args[0] = 'checkout'
+
+        & $gitExe @args
+        return
+    }
     elseif ($args.Length -gt 0 -and $args[0] -eq 'commit')
     {
         & "C:\Program Files\OllieAve.GitCommitImproved\Release\net9.0\win-x64\OllieAve.GitCommitImproved.exe"-- @($args | Select-Object -Skip 1)
+        return
+    }
+    elseif ($args.Length -gt 0 -and $args[0] -eq 'commitr')
+    {
+        $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
+
+        $args[0] = 'commit'
+
+        & $gitExe @args
         return
     }
 
@@ -111,4 +129,4 @@ function dnr {
     dotnet run --project $projectDir.FullName @launchProfileArg
 }
 
-oh-my-posh init pwsh --config './.posh-config.json' | Invoke-Expression
+oh-my-posh init pwsh --config (Join-Path (Split-Path $PROFILE) '.posh-config.json') | Invoke-Expression
