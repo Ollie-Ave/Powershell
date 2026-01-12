@@ -19,13 +19,17 @@ New-Alias vim nvim
 New-Alias pn pnpm
 New-Alias dn dotnet
 New-Alias reboot restart-computer
-# New-Alias git giti
 
 function git
 {
     if ($args.Length -gt 0 -and $args[0] -eq 'checkout')
     {
-        & "C:\Program Files\OllieAve.GitImproved\net9.0\OllieAve.GitImproved.exe" -- @($args | Select-Object -Skip 1)
+        $gitExe = (Get-Command giti -CommandType Application | Select-Object -First 1).Source
+
+        $args[0] = 'checkout'
+
+        & $gitExe @args
+
         return
     }
     elseif ($args.Length -gt 0 -and $args[0] -eq 'checkoutr')
@@ -39,7 +43,11 @@ function git
     }
     elseif ($args.Length -gt 0 -and $args[0] -eq 'commit')
     {
-        & "C:\Program Files\OllieAve.GitCommitImproved\Release\net9.0\win-x64\OllieAve.GitCommitImproved.exe"-- @($args | Select-Object -Skip 1)
+        $gitExe = (Get-Command giti -CommandType Application | Select-Object -First 1).Source
+
+        $args[0] = 'commit'
+
+        & $gitExe @args
         return
     }
     elseif ($args.Length -gt 0 -and $args[0] -eq 'commitr')
@@ -126,7 +134,7 @@ function dnr {
         }
     }
 
-    dotnet run --project $projectDir.FullName @launchProfileArg
+    dotnet run --project $projectDir.FullName --no-restore -m:12 @launchProfileArg
 }
 
 oh-my-posh init pwsh --config (Join-Path (Split-Path $PROFILE) '.posh-config.json') | Invoke-Expression
