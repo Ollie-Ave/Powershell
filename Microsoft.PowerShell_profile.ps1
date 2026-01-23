@@ -19,50 +19,49 @@ New-Alias vim nvim
 New-Alias pn pnpm
 New-Alias dn dotnet
 New-Alias reboot restart-computer
+New-Alias git giti
+New-Alias c claude
+New-Alias oc opencode
 
-function git
-{
-    if ($args.Length -gt 0 -and $args[0] -eq 'checkout')
-    {
-        $gitExe = (Get-Command giti -CommandType Application | Select-Object -First 1).Source
-
-        $args[0] = 'checkout'
-
-        & $gitExe @args
-
-        return
-    }
-    elseif ($args.Length -gt 0 -and $args[0] -eq 'checkoutr')
-    {
-        $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
-
-        $args[0] = 'checkout'
-
-        & $gitExe @args
-        return
-    }
-    elseif ($args.Length -gt 0 -and $args[0] -eq 'commit')
-    {
-        $gitExe = (Get-Command giti -CommandType Application | Select-Object -First 1).Source
-
-        $args[0] = 'commit'
-
-        & $gitExe @args
-        return
-    }
-    elseif ($args.Length -gt 0 -and $args[0] -eq 'commitr')
-    {
-        $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
-
-        $args[0] = 'commit'
-
-        & $gitExe @args
-        return
-    }
-
-    $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
-    & $gitExe @args
-}
+# function git
+# {
+ #    if ($args.Length -gt 0 -and $args[0] -eq 'checkout')
+  #   {
+   #      $gitExe = (Get-Command giti -CommandType Application | Select-Object -First 1).Source
+# 
+ #        & $gitExe @args
+# 
+ #        return
+  #   }
+   #  elseif ($args.Length -gt 0 -and $args[0] -eq 'checkoutr')
+    # {
+     #    $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
+# 
+ #        $args[0] = 'checkout'
+# 
+ #        & $gitExe @args
+  #       return
+   #  }
+    # elseif ($args.Length -gt 0 -and $args[0] -eq 'commit')
+    # {
+     #    $gitExe = (Get-Command giti -CommandType Application | Select-Object -First 1).Source
+# 
+ #        & $gitExe @args
+  #       return
+   #  }
+    # elseif ($args.Length -gt 0 -and $args[0] -eq 'commitr')
+    # {
+     #    $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
+# 
+ #        $args[0] = 'commit'
+# 
+ #        & $gitExe @args
+  #       return
+   #  }
+# 
+ #    $gitExe = (Get-Command git.exe -CommandType Application | Select-Object -First 1).Source
+  #   & $gitExe @args
+# }
 
 function cap
 {
@@ -138,3 +137,13 @@ function dnr {
 }
 
 oh-my-posh init pwsh --config (Join-Path (Split-Path $PROFILE) '.posh-config.json') | Invoke-Expression
+
+# Wrap prompt to set tab index env var before oh-my-posh renders
+$_ompOriginalPrompt = $function:prompt
+function prompt {
+    $env:WEZTERM_TAB = Get-Content "$env:TEMP\wezterm_tab_$env:WEZTERM_PANE" 2>$null
+    # Emit OSC 7 for WezTerm to track current working directory
+    $cwd = (Get-Location).Path.Replace('\', '/')
+    Write-Host -NoNewline "$([char]27)]7;file://localhost/$cwd$([char]7)"
+    & $_ompOriginalPrompt
+}
